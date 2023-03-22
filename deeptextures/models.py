@@ -3,7 +3,8 @@
 import torch
 import torch.nn as nn
 from torch.nn.functional import relu
-from torchvision.models.utils import load_state_dict_from_url
+#from torchvision.models.utils import load_state_dict_from_url
+from torch.hub import load_state_dict_from_url  #에러대체
 from torchvision.models.vgg import cfgs, make_layers, model_urls
 
 
