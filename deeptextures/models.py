@@ -29,36 +29,19 @@ class VGG19(nn.ModuleDict): # torch.nn.ModuleDict : Model dictionary - (string: 
         super().__init__()  # 부모 클래스 의 __init__ 불러옴 / 부모클래스 -> nn.ModuleDict 로 추정
         self.avg_pool = avg_pool    # 클래스의 변수
 
-        self.layer_names = """  # 클래스의 변수
+        self.layer_names = """
         conv1_1 conv1_2 pool1
         conv2_1 conv2_2 pool2
         conv3_1 conv3_2 conv3_3 conv3_4 pool3
         conv4_1 conv4_2 conv4_3 conv4_4 pool4
         conv5_1 conv5_2 conv5_3 conv5_4 pool5
-        """.split() # 공백을 기준으로 쪼개줌 -> layer_names 에 ['conv1_1','conv1_2',...] 형태로 쪼개서 들어감
-
-        # self. 으로 변수 선언 안되어 있으므로 해당 클래스 지역변수
-        # filter() : 파이썬의 내장 함수, 여러 개의 데이터로 부터 (list나 tuple) 일부의 데이터만 추려낼 때 사용.
-        # filter(조건 함수, 여러 데이터) -> 여러 데이터(리스트, 튜플) 에서 조건함수에 맞는 데이터만 뽑아낸다.
-        # 조건함수는 lambda 로 대체
-        # isinstance(확인하고자 하는 데이터 값, 확인하고자 하는 데이터 타입) -> true,false 반환
-        # cfgs 'E'의 레이어 이름들이 m이 nn.ReLU 값이 아닌것을 layers라는 변수에 넣는다.
+        """.split()
         layers = filter(lambda m: not isinstance(m, nn.ReLU), make_layers(cfgs["E"]))
-        # map(함수, (리스트, 튜플)등의 데이터) : 데이터들을 함수에 넣어 연결한다.
-        # 조건함수는 lambda 로 대체
-        # isinstance(확인하고자 하는 데이터 값, 확인하고자 하는 데이터 타입) -> true,false 반환
-        # 1) m = AvgPool2d(2, 2)
-        # 2) if (isinstance(m, nn.MaxPool2d) and self.avg_pool) -> m = AvgPool2d(2, 2)와 nn.MaxPool2d 데이터 타입이 같고 + init 에서 avg_pool=true일 때-> 아무일도 없음
-        # 3) else m -> 그렇지 않을 때 m = AvgPool2d(2, 2)와
-        # 4) 레이어 이름들 중 렐루 아닌것을 집어넣은 layers와 map 함
         layers = map(lambda m: nn.AvgPool2d(2, 2) if (isinstance(m, nn.MaxPool2d) and self.avg_pool) else m, layers)
-        # zip() : 길이가 같은 리스트 등의 요소를 묶어주는 함수
-        # dict() : 딕셔너리 = dict(zip([키1, 키2], [값1, 값2])) 형태로 받음 => 키값 : layer_names , 값 : layers 형태 딕셔너리
         self.update(dict(zip(self.layer_names, layers)))
 
         for p in self.parameters():
-            p.requires_grad_(False) # gradient 구하기 위해서는 tensor 의 속성을 requires_grad_=True로 설정
-            # flase 일 경우 -> gradient 를 업데이트 하지 않고, dropout, batchnormalization 등이 적용되지 않습니다.
+            p.requires_grad_(False)
 
     def remap_state_dict(self, state_dict):
         original_names = "0 2 4 5 7 9 10 12 14 16 18 19 21 23 25 27 28 30 32 34 36".split()
@@ -97,13 +80,11 @@ class VGG19(nn.ModuleDict): # torch.nn.ModuleDict : Model dictionary - (string: 
                 yield outputs[name]
 
 
-def vgg19(avg_pool: bool = True, pretrained: bool = True,): # init.py 에서 사용
-    model = VGG19(avg_pool=avg_pool)    # VGG19 는 클래스 -> class VGG19(nn.ModuleDict)
+def vgg19(avg_pool: bool = True, pretrained: bool = True,):
+    model = VGG19(avg_pool=avg_pool)
 
-    if pretrained:  # 매개변수로 pretrained 여부 받아왔음
+    if pretrained:
         state_dict = load_state_dict_from_url(model_urls["vgg19"], progress=True)
         model.load_state_dict(state_dict)
-        # model.load_state_dict : 역직렬화된 state_dict를 사용, 모델의 매개변수들을 불러옴.
-        # state_dict는 간단히 말해 각 체층을 매개변수 Tensor로 매핑한 Python 사전(dict) 객체.
 
     return model
