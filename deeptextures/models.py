@@ -10,7 +10,7 @@ from torch.nn.functional import relu    # relu 요소 관련
 from torch.hub import load_state_dict_from_url  #에러대체
 # Pytorch Hub-> 연구 재현성을 촉진하도록 설계된 사전 훈련된 모델 리포지토리
 # load_state_dict_from_url : 주어진 URL에서 Torch 직렬화된 개체를 로드 -> Dict[str, Any] 반환
-from torchvision.models.vgg import cfgs, make_layers, model_urls
+from torchvision.models.vgg import cfgs, make_layers #, model_urls
 # cfg 들: GG 모델의 구조 정보 (각 vgg 모델마다 input, output 개수, 레이어 개수, pooling 언제 하는지 정보 들어있음)
 '''
 cfgs: Dict[str, List[Union[str, int]]] = {
@@ -22,6 +22,11 @@ cfgs: Dict[str, List[Union[str, int]]] = {
 '''
 # make_layers : conv2d relu poll 등 레이어 만들기
 # model_urls : vgg 11 ~ 19 모델들에 대한 정보 url 들 담음
+
+# change from your model_urls to this
+from torchvision.models.vgg import VGG19_Weights
+
+dict_vgg19 = torch.utils.model_zoo.load_url(VGG19_Weights.IMAGENET1K_V1)
 
 
 class VGG19(nn.ModuleDict): # torch.nn.ModuleDict : Model dictionary - (string: module) 매핑, 키-값 쌍의 iterable
@@ -84,7 +89,7 @@ def vgg19(avg_pool: bool = True, pretrained: bool = True,):
     model = VGG19(avg_pool=avg_pool)
 
     if pretrained:
-        state_dict = load_state_dict_from_url(model_urls["vgg19"], progress=True)
-        model.load_state_dict(state_dict)
+        #state_dict = load_state_dict_from_url(dict_vgg19, progress=True)
+        model.load_state_dict(dict_vgg19)
 
     return model
