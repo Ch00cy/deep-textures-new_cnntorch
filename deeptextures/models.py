@@ -24,7 +24,7 @@ cfgs: Dict[str, List[Union[str, int]]] = {
 # model_urls : vgg 11 ~ 19 모델들에 대한 정보 url 들 담음
 
 # change from your model_urls to this
-from torchvision.models.vgg import VGG19_Weights
+from torchvision.models.vgg19 import VGG19_Weights
 
 dict_vgg19 = torch.utils.model_zoo.load_url(VGG19_Weights.IMAGENET1K_V1)
 
