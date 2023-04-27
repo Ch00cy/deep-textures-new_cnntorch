@@ -29,7 +29,8 @@ cfgs: Dict[str, List[Union[str, int]]] = {
 #
 # dict_vgg19 = torch.utils.model_zoo.load_url(VGG19_Weights.IMAGENET1K_V1)
 
-from torchvision.models import vgg19, VGG19_Weights
+# # model_urls 대신 시도용 - 사용안하고 해결함
+# from torchvision.models import vgg19, VGG19_Weights
 
 class VGG19(nn.ModuleDict): # torch.nn.ModuleDict : Model dictionary - (string: module) 매핑, 키-값 쌍의 iterable
     def __init__(self, avg_pool=True):  # 초기화 함수
